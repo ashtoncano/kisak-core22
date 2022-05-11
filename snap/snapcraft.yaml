@@ -1,0 +1,50 @@
+name: kisak-core20
+base: core20
+adopt-info: mesa
+summary: kisak mesa libraries for core20 snaps
+description: |
+  A content snap containing updated mesa libraries and drivers for core 20
+compression: lzo
+
+grade: stable
+confinement: strict
+
+package-repositories:
+  - type: apt
+    ppa: kisak/kisak-mesa
+
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
+  - build-on: ppc64el
+  - build-on: s390x
+
+parts:
+  mesa:
+    plugin: nil
+    override-pull:
+      snapcraftctl set-version `LANG=C apt-cache policy libgl1-mesa-dri | sed -rne 's/^\s+Candidate:\s+([^-~]*)[-~].+$/\1/p'`
+    stage-packages:
+      - libgl1-mesa-dri
+      - va-driver-all
+      - libegl1
+      - libgles2
+    organize:
+      'usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri/*': egl/dri/
+      'usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/*.so*': egl/lib/
+      'usr/share/glvnd': egl/glvnd/
+      'usr/share/libdrm': egl/libdrm/
+      'usr/share/drirc.d/': egl/drirc.d/
+    prime:
+      - egl/lib
+      - egl/dri
+      - egl/glvnd
+      - egl/libdrm
+      - egl/drirc.d
+
+slots:
+  graphics-core20:
+    interface: content
+    read:
+      - egl
