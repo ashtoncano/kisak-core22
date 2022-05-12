@@ -19,7 +19,16 @@ architectures:
   - build-on: armhf
 
 parts:
+  multiarch:
+    plugin: nil
+    override-build: |
+      if [ "${SNAPCRAFT_TARGET_ARCH}" == amd64 ]; then
+        sudo dpkg --add-architecture i386
+        sudo apt-get update
+      fi
+
   mesa:
+    after: [multiarch]
     plugin: nil
     override-pull:
       snapcraftctl set-version `LANG=C apt-cache policy libgl1-mesa-dri | sed -rne 's/^\s+Candidate:\s+([^-~]*)[-~].+$/\1/p'`
@@ -28,15 +37,24 @@ parts:
       - va-driver-all
       - libegl1
       - libgles2
+      - to amd64:
+        - libgl1-mesa-dri:i386
+        - va-driver-all:i386
+        - libegl1:i386
+        - libgles2:i386
     organize:
       'usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri/*': egl/dri/
       'usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/*.so*': egl/lib/
+      'usr/lib/i386-linux-gnu/dri/*': egl/dri-i386/
+      'usr/lib/i386-linux-gnu/*.so*': egl/lib-i386/
       'usr/share/glvnd': egl/glvnd/
       'usr/share/libdrm': egl/libdrm/
       'usr/share/drirc.d/': egl/drirc.d/
     prime:
       - egl/lib
       - egl/dri
+      - egl/lib-i386
+      - egl/dri-i386
       - egl/glvnd
       - egl/libdrm
       - egl/drirc.d
