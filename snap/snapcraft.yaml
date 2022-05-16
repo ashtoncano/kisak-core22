@@ -1,9 +1,9 @@
-name: kisak-core20
-base: core20
+name: kisak-core22
+base: core22
 adopt-info: mesa
-summary: kisak mesa libraries for core20 snaps
+summary: kisak mesa libraries for core22 snaps
 description: |
-  A content snap containing updated mesa libraries and drivers for core 20
+  A content snap containing updated mesa libraries and drivers for core 22
 compression: lzo
 
 grade: stable
@@ -22,7 +22,7 @@ parts:
   mesa:
     plugin: nil
     override-pull:
-      snapcraftctl set-version `LANG=C apt-cache policy libgl1-mesa-dri | sed -rne 's/^\s+Candidate:\s+([^-~]*)[-~].+$/\1/p'`
+      craftctl set version=`LANG=C apt-cache policy libgl1-mesa-dri | sed -rne 's/^\s+Candidate:\s+([^-~]*)[-~].+$/\1/p'`
     stage-packages:
       - libgl1-mesa-dri
       - va-driver-all
@@ -70,7 +70,6 @@ parts:
       - -usr/share/doc
 
 slots:
-  graphics-core20:
+  graphics-core22:
     interface: content
-    read:
-      - egl
+    read: 'egl'
