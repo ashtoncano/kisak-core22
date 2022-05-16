@@ -1,9 +1,9 @@
-name: kisak-core20
-base: core20
+name: kisak-core22
+base: core22
 adopt-info: mesa
-summary: kisak mesa libraries for core20 snaps
+summary: kisak mesa libraries for core22 snaps
 description: |
-  A content snap containing updated mesa libraries and drivers for core 20
+  A content snap containing updated mesa libraries and drivers for core 22
 compression: lzo
 
 grade: stable
@@ -22,16 +22,17 @@ parts:
   multiarch:
     plugin: nil
     override-build: |
-      if [ "${SNAPCRAFT_TARGET_ARCH}" == amd64 ]; then
-        sudo dpkg --add-architecture i386
-        sudo apt-get update
+      craftctl default
+      if [ "${SNAP_ARCH}" == amd64 ]; then
+        dpkg --add-architecture i386
+        apt-get update
       fi
 
   mesa:
     after: [multiarch]
     plugin: nil
     override-pull:
-      snapcraftctl set-version `LANG=C apt-cache policy libgl1-mesa-dri | sed -rne 's/^\s+Candidate:\s+([^-~]*)[-~].+$/\1/p'`
+      craftctl set version=`LANG=C apt-cache policy libgl1-mesa-dri | sed -rne 's/^\s+Candidate:\s+([^-~]*)[-~].+$/\1/p'`
     stage-packages:
       - libgl1-mesa-dri
       - va-driver-all
@@ -43,8 +44,8 @@ parts:
         - libegl1:i386
         - libgles2:i386
     organize:
-      'usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/dri/*': egl/dri/
-      'usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/*.so*': egl/lib/
+      'usr/lib/*/dri/*': egl/dri/
+      'usr/lib/*/*.so*': egl/lib/
       'usr/lib/i386-linux-gnu/dri/*': egl/dri-i386/
       'usr/lib/i386-linux-gnu/*.so*': egl/lib-i386/
       'usr/share/glvnd': egl/glvnd/
@@ -60,7 +61,6 @@ parts:
       - egl/drirc.d
 
 slots:
-  graphics-core20:
+  graphics-core22:
     interface: content
-    read:
-      - egl
+    read: 'egl'
