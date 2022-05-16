@@ -53,11 +53,11 @@ parts:
     prime:
       - egl/lib
       - egl/dri
-      - egl/lib-i386
-      - egl/dri-i386
       - egl/glvnd
       - egl/libdrm
       - egl/drirc.d
+      - egl/lib-i386*
+      - egl/dri-i386*
 
 slots:
   graphics-core20:
